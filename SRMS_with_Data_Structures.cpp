@@ -358,16 +358,18 @@ void loadSampleData() {
 int main() {
     int choice;
     do {
-        cout << "\n===== Student Record Management System =====\n";
-        cout << "1. Add Student\n2. Show Students\n3. Delete Student\n4. Search Student\n5. Show Report\n6. Pointer Swap\n";
-    cout << "7. Show History\n8. Undo\n9. Redo\n10. Sort By Score\n11. Sort By Name\n12. Add Print Queue\n13. Process Prints\n14. Show Ranking Tree\n15. Load Sample Data\n0. Exit\n";
+        cout << "\n================================" << endl;
+        cout << "    STUDENT MANAGEMENT SYSTEM" << endl;
+        cout << "================================" << endl;
+        cout << "1. Add Student\n2. Delete Student\n3. Show Students\n4. Search Student\n5. Show Report\n6. Pointer Swap\n";
+        cout << "7. Show History\n8. Undo\n9. Redo\n10. Sort By Score\n11. Sort By Name\n12. Add Print Queue\n13. Process Prints\n14. Show Ranking Tree\n15. Load Sample Data\n0. Exit\n";
         cout << "Enter choice: ";
         cin >> choice;
 
         switch (choice) {
             case 1: addStudent(); addHistory("Added", nextId - 1); break;
-            case 2: showStudents(); break;
-            case 3: deleteStudent(); addHistory("Deleted", nextId - 1); break;
+            case 2: deleteStudent(); addHistory("Deleted", nextId - 1); break;
+            case 3: showStudents(); break;
             case 4: searchStudent(); break;
             case 5: showReport(); break;
             case 6: pointerSwap(); addHistory("Swapped", -1); break;
