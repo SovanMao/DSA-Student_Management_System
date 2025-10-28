@@ -239,7 +239,7 @@ void showPointers() {
 }
 
 // ============================================================================
-// MODULE 7: SORTING & SEARCHING ENGINE (SORTING ALGORITHMS)
+// MODULE 7: SORTING (SORTING ALGORITHMS)
 // ============================================================================
 // Sorting by Score (Bubble Sort)
 void sortByScore() {
@@ -282,29 +282,6 @@ void sortByName() {
 // Legacy function for backward compatibility
 void bubbleSort() {
     sortByScore();
-}
-
-void linearSearch() {
-    if (totalStudents == 0) {
-        cout << "No students to search!" << endl;
-        return;
-    }
-    
-    int id;
-    cout << "\n--- LINEAR SEARCH ---" << endl;
-    cout << "Enter student ID: ";
-    cin >> id;
-    
-    for (int i = 0; i < totalStudents; i++) {
-        cout << "Checking position " << (i+1) << "...";
-        if (studentArray[i].id == id) {
-            cout << " FOUND!" << endl;
-            studentArray[i].display();
-            return;
-        }
-        cout << " not found" << endl;
-    }
-    cout << "Student not found!" << endl;
 }
 
 // Sample Data
