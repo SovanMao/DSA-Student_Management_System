@@ -1,213 +1,159 @@
 # Student Record Management System (SRMS)
-**Data Structures & Algorithms Mini-Final Project**
+**Data Structures & Algorithms Educational Project**
 
 ## 🎯 Project Overview
 
-The Student Record Management System is a comprehensive C++ application designed to demonstrate various data structure and algorithm concepts through practical implementation. This educational project showcases 8 core computer science concepts integrated into a unified student management system.
+The Student Record Management System is a comprehensive C++ console application that demonstrates 8 fundamental data structure and algorithm concepts through a practical student management system. This educational project integrates multiple computer science principles into a cohesive, interactive program designed for learning and demonstration purposes.
 
 ## 📚 Data Structure Concepts Demonstrated
 
 | Module | Concept | Implementation | Key Features |
 |--------|---------|----------------|--------------|
-| 1 | **Array** | Static array management | CRUD operations, traversal, search |
-| 2 | **Recursion** | Recursive report generation | Outstanding/failed student reports |
-| 3 | **Pointers** | Pointer-based operations | Array traversal, record swapping |
-| 4 | **Linked List** | Singly linked list | Operation history tracking |
-| 5 | **Stack** | Stack-based operations | Undo/Redo functionality |
-| 6 | **Queue** | Queue management | Print request processing |
-| 7 | **Sorting** | Multiple algorithms | Bubble, Selection, Insertion, Merge, Quick |
-| 8 | **Binary Tree** | Binary Search Tree | Score-based student rankings |
+| 1 | **Arrays** | Static array management | Student storage, CRUD operations, traversal |
+| 2 | **Recursion** | Recursive report generation | Pass/fail student reports using recursive functions |
+| 3 | **Pointers** | Pointer-based data access | Student swapping using pointer arithmetic |
+| 4 | **Linked Lists** | Singly linked list | Dynamic operation history tracking |
+| 5 | **Stacks** | LIFO operations | Undo system for deleted students |
+| 6 | **Queues** | FIFO operations | Print request management system |
+| 7 | **Sorting Algorithms** | Bubble sort implementation | Sort by name/score with real-time execution |
+| 8 | **Binary Search Trees** | BST for hierarchical data | Score-based student rankings and search |
 
-## 🏗️ Project Structure
+## 🏗️ Project Files
 
 ```
 SRMS/
-├── student.h              # Student class definition
-├── srms.h                 # Main header with function prototypes
+├── student.h              # Student struct definition
+├── srms.h                 # Function prototypes
 ├── main.cpp               # Program entry point
-├── array_manager.cpp      # Module 1-3: Array, Recursion, Pointers
-├── data_structures.cpp    # Module 4-6: Linked List, Stack, Queue
-├── sorting_searching.cpp  # Module 7: Sorting & Searching algorithms
-├── bst.cpp                # Module 8: Binary Search Tree
-├── menu_system.cpp        # User interface and navigation
-├── Makefile               # Build configuration
-└── README.md              # Project documentation
+├── functions.cpp          # Arrays, Recursion, Pointers, Sorting
+├── structures.cpp         # Linked List, Stack, Queue, BST
+├── menu.cpp               # User interface system
+└── README.md              # Documentation
 ```
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - C++ compiler (g++ recommended)
-- Make utility (optional but recommended)
-- Windows/Linux/macOS
+- Windows PowerShell, Command Prompt, or Terminal
 
-### Compilation Options
-
-#### Option 1: Using Makefile (Recommended)
+### Compilation
 ```bash
-# Build the project
-make
+# Windows
+g++ -o srms.exe main.cpp functions.cpp structures.cpp menu.cpp
 
-# Build and run
-make run
-
-# Clean build files
-make clean
-```
-
-#### Option 2: Manual Compilation
-```bash
-# Windows (PowerShell/CMD)
-g++ -std=c++11 -Wall -o srms.exe main.cpp array_manager.cpp data_structures.cpp sorting_searching.cpp bst.cpp menu_system.cpp
-
-# Linux/macOS
-g++ -std=c++11 -Wall -o srms main.cpp array_manager.cpp data_structures.cpp sorting_searching.cpp bst.cpp menu_system.cpp
+# Linux/macOS  
+g++ -o srms main.cpp functions.cpp structures.cpp menu.cpp
 ```
 
 ### Running the Program
 ```bash
 # Windows
-./srms.exe
+srms.exe
 
 # Linux/macOS
 ./srms
 ```
 
-## 📋 Features & Usage
+## 📋 Main Features
 
-### 1. Array Manager
-- **Display All Students**: View complete student records
-- **Add New Student**: Insert student with ID, name, score, course
-- **Delete Student**: Remove student by ID
-- **Search Student**: Find student by ID
-- **Traverse Array**: Index-based array iteration
+### 1. Basic Functions (Arrays)
+- Display, add, delete, and search students
+- Static array operations with validation
 
-### 2. Recursive Reports
-- **Outstanding Students**: Score ≥ 85 (recursive filtering)
-- **Failed Students**: Score < 60 (recursive counting)
+### 2. Generate Reports (Recursion)
+- Pass/fail student reports using recursive functions
+- Score-based filtering (≥60 pass, <60 fail)
 
 ### 3. Pointer Operations
-- **Pointer Traversal**: Navigate array using pointer arithmetic
-- **Student Swapping**: Exchange records using pointer manipulation
+- Swap two students using pointer manipulation
+- Shows memory address operations
 
-### 4. Record History (Linked List)
-- **Operation Tracking**: Maintain chronological operation history
-- **History Display**: View recent modifications (LIFO order)
+### 4. View History (Linked Lists)
+- Track all ADD/DELETE operations
+- Shows last 5 operations performed
 
-### 5. Undo/Redo System (Stack)
-- **Undo Operations**: Reverse last action
-- **Redo Operations**: Restore undone action
-- **State Management**: Stack-based operation tracking
+### 5. Undo System (Stacks)
+- Restore deleted students
+- LIFO (Last-In-First-Out) behavior
 
-### 6. Print Queue Manager
-- **Add Print Requests**: Queue student reports for printing
-- **Process Requests**: FIFO-based request handling
-- **Queue Status**: View pending print jobs
+### 6. Print Queue (Queues)
+- Manage print requests for student reports
+- FIFO (First-In-First-Out) processing
 
-### 7. Sorting Algorithms
-- **Bubble Sort**: Score-based (with step visualization)
-- **Selection Sort**: Name-based alphabetical ordering
-- **Insertion Sort**: ID-based ascending order
-- **Merge Sort**: Divide-and-conquer approach
-- **Quick Sort**: Partition-based sorting
+### 7. Sorting & Search
+- Sort students by name or score
+- Uses bubble sort algorithm
 
-### 8. Binary Search Tree
-- **BST Construction**: Build tree from student array
-- **In-Order Traversal**: Display score-based rankings
-- **Score Search**: Find students by specific score
-- **Tree Visualization**: Display tree structure
+### 8. Student Rankings (Binary Search Trees)
+- Organize students by score in tree structure
+- Shows hierarchical data organization
+
+### 9. Load Sample Data
+- 5 pre-loaded students for testing
+- Various majors and score ranges
 
 ## 🎓 Educational Value
 
-### Algorithm Complexity Analysis
-- **Array Operations**: O(1) access, O(n) search
-- **Linked List**: O(1) insertion, O(n) traversal
-- **Stack/Queue**: O(1) push/pop, enqueue/dequeue
-- **Sorting**: O(n²) to O(n log n) depending on algorithm
-- **BST Operations**: O(log n) average, O(n) worst case
-
-### Programming Concepts Demonstrated
-- **Object-Oriented Programming**: Classes, encapsulation
-- **Memory Management**: Dynamic allocation, pointers
-- **Algorithm Design**: Recursive and iterative approaches
-- **Data Structure Implementation**: From scratch implementations
-- **Error Handling**: Input validation, boundary checks
+### Data Structures Demonstrated
+- **Arrays**: Student storage and management
+- **Linked Lists**: Operation history tracking
+- **Stacks**: Undo functionality  
+- **Queues**: Print job management
+- **Binary Trees**: Score-based rankings
+- **Recursion**: Report generation
+- **Pointers**: Memory manipulation
+- **Sorting**: Bubble sort algorithm
 
 ## 📊 Sample Data
 
-The system includes pre-loaded sample data for testing:
-- 8 diverse student records
-- Various scores (45-95.5 range)
-- Multiple courses (CS, Math, Physics, Chemistry)
-- Different student statuses
+5 pre-loaded students for testing:
+- Alice (Computer Science, 85.5)
+- Bob (Mathematics, 72.0)  
+- Carol (Engineering, 95.0)
+- David (Biology, 45.5)
+- Eva (Physics, 88.0)
 
-## 🔧 Customization
+## 🔧 Student Data Structure
 
-### Adding New Features
-1. **New Data Fields**: Modify `Student` struct in `student.h`
-2. **Additional Operations**: Extend respective module files
-3. **Menu Integration**: Update `menu_system.cpp`
+```cpp
+struct Student {
+    int id;           // Student ID
+    string name;      // Student name
+    string major;     // Academic major
+    double score;     // Score (0-100)
+};
+```
 
-### Performance Optimization
-- Implement balanced BST (AVL/Red-Black)
-- Add hash table for O(1) lookups
-- Optimize sorting with hybrid algorithms
+## 🎯 Quick Demo
 
-## 📝 Class Presentation Guide
-
-### Recommended Demo Flow
-1. **Introduction** (2 min): Project overview and objectives
-2. **Data Structure Tour** (10 min): Demonstrate each module
-3. **Algorithm Analysis** (5 min): Complexity discussion
-4. **Integration Demo** (5 min): Show module interaction
-5. **Q&A** (3 min): Address technical questions
-
-### Key Talking Points
-- **Practical Application**: Real-world relevance
-- **Algorithm Trade-offs**: Time vs. space complexity
-- **Design Decisions**: Why specific data structures were chosen
-- **Scalability**: How the system could be extended
+1. Load sample data (Option 9)
+2. Display all students (Option 1)
+3. Add a new student 
+4. Generate pass/fail reports (Option 2)
+5. Swap students (Option 3)
+6. View operation history (Option 4)
+7. Delete and undo (Options 1, 5)
+8. Use print queue (Option 6)
+9. Sort students (Option 7)
+10. Show BST rankings (Option 8)
 
 ## 🐛 Troubleshooting
 
-### Common Issues
-- **Compilation Errors**: Ensure all files are in same directory
-- **Linking Problems**: Verify all .cpp files are included
-- **Runtime Errors**: Check for proper input validation
+**If compilation fails:**
+- Check all 4 .cpp files are in same folder
+- Use correct file names: `main.cpp`, `functions.cpp`, `structures.cpp`, `menu.cpp`
 
-### Debug Mode
-Compile with debug flags for detailed error information:
-```bash
-g++ -g -DDEBUG -std=c++11 -Wall -o srms_debug *.cpp
-```
+**Program limits:**
+- Maximum 50 students
+- Handles invalid input automatically
 
-## 📖 Further Reading
+## 📄 Project Info
 
-### Related Topics
-- Advanced Data Structures (B-trees, Heaps)
-- Graph Algorithms (Dijkstra, BFS/DFS)
-- Database Management Systems
-- Software Design Patterns
-
-### Recommended Extensions
-- File I/O for persistent storage
-- GUI implementation (Qt/GTK)
-- Network integration for multi-user access
-- Database backend integration
-
-## 👥 Contributing
-
-This is an educational project. For improvements:
-1. Fork the repository
-2. Create feature branch
-3. Implement changes with documentation
-4. Submit pull request
-
-## 📄 License
-
-Educational use only. Feel free to use as reference for learning purposes.
+**Course**: Data Structures & Algorithms  
+**Language**: C++  
+**Purpose**: Educational demonstration
 
 ---
 
-**Developed for Data Structures & Algorithms Course**  
-*Demonstrating practical application of core CS concepts*
+*Demonstrates 8 fundamental data structures and algorithms in a practical student management system.*
