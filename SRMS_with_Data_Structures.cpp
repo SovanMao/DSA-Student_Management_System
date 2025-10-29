@@ -45,6 +45,7 @@ const int MAX = 100;
 Student students[MAX];
 int studentCount = 0;
 int nextId = 1;
+stack<Student> undoStack, redoStack;
 
 // --------------------------- Array Manager ---------------------------
 void addStudent() {
@@ -63,25 +64,23 @@ void addStudent() {
     cout << "Enter score: ";
     cin >> s.score;
     s.valid = true;
+    Student state_before_add = s;
+    state_before_add.valid = false;
+    undoStack.push(state_before_add);
+    
+    while (!redoStack.empty()) redoStack.pop();
     students[studentCount++] = s;
-    cout << "\nStudent added successfully!\n";
+    cout << "Student added successfully!\n";
 }
 
 void showStudents() {
     cout << "\n--- Student List ---\n";
-    bool anyPrinted = false;
     for (int i = 0; i < studentCount; i++) {
-        if (students[i].valid) {
+        if (students[i].valid)
             cout << "ID: " << students[i].id
                  << " | Name: " << students[i].name
                  << " | Score: " << students[i].score << "\n";
-            anyPrinted = true;
-        }
     }
-    if (!anyPrinted) {
-        cout << "No valid students found.\n";
-    }
-    cout << "---------------------\n" << endl;
 }
 
 void searchStudent() {
@@ -107,7 +106,7 @@ void searchStudent() {
 
 int findStudent(int id) {
     for (int i = 0; i < studentCount; i++)
-        if (students[i].valid && students[i].id == id)
+        if (students[i].id == id) 
             return i;
     return -1;
 }
@@ -121,6 +120,8 @@ void deleteStudent() {
         cout << "Student not found!\n";
         return;
     }
+    undoStack.push(students[idx]);
+    while (!redoStack.empty()) redoStack.pop();
     students[idx].valid = false;
     cout << "Deleted successfully.\n";
 }
@@ -189,25 +190,29 @@ void showHistory() {
         temp = temp->next;
         count++;
     }
-    if (!history)
-        cout << "No history available.\n";
 }
 
 // --------------------------- Undo / Redo System ---------------------------
-stack<Student> undoStack, redoStack;
 
 void undo() {
     if (undoStack.empty()) {
         cout << "Nothing to undo!\n";
         return;
     }
-    Student last = undoStack.top();
+    Student state_to_restore = undoStack.top();
     undoStack.pop();
-    int idx = findStudent(last.id);
-    if (idx != -1)
-        students[idx] = last;
-    redoStack.push(last);
-    cout << "Undo performed.\n";
+
+    int idx = findStudent(state_to_restore.id);
+    if (idx != -1) {
+        // 2. Save the *current* state of the array record for REDO
+        redoStack.push(students[idx]); 
+        
+        // 3. Restore the previous state (reverses the action)
+        students[idx] = state_to_restore; 
+        cout << "Undo performed.\n";
+    } else {
+        cout << "Undo performed, but original record location is lost.\n";
+    }
 }
 
 void redo() {
@@ -215,10 +220,17 @@ void redo() {
         cout << "Nothing to redo!\n";
         return;
     }
-    Student rec = redoStack.top();
+    Student state_to_restore = redoStack.top();
     redoStack.pop();
-    undoStack.push(rec);
-    cout << "Redo performed.\n";
+
+    int idx = findStudent(state_to_restore.id);
+    if (idx != -1) {
+        undoStack.push(students[idx]); 
+        students[idx] = state_to_restore; 
+        cout << "Redo performed.\n";
+    } else {
+        cout << "Redo performed, but record location is lost.\n";
+    }
 }
 
 // --------------------------- Sorting Algorithms ---------------------------
@@ -268,7 +280,6 @@ void displaySortedByScore() {
     for (const auto& s : v) s.display();
 }
 
-
 // --------------------------- Print Queue Manager ---------------------------
 queue<int> printQueue;
 
@@ -277,6 +288,7 @@ void enqueuePrint() {
     cout << "Enter student ID to print: ";
     cin >> id;
     printQueue.push(id);
+    addHistory("Queued Print", id);
     cout << "Added to print queue.\n";
 }
 
@@ -286,10 +298,13 @@ void processPrints() {
         int id = printQueue.front();
         printQueue.pop();
         int idx = findStudent(id);
-        if (idx != -1 && students[idx].valid)
+        if (idx != -1 && students[idx].valid){
+            addHistory("Printed", id);
             cout << "Printing Report - " << students[idx].name << ": " << students[idx].score << "\n";
-        else
+        }
+        else{
             cout << "Student not found.\n";
+        }
     }
 }
 
@@ -372,7 +387,6 @@ int main() {
         cout << "================================" << endl;
         cout << "1. Add Student\n2. Delete Student\n3. Show Students\n4. Search Student\n5. Show Report\n6. Pointer Swap\n";
         cout << "7. Show History\n8. Undo\n9. Redo\n10. Sort By Score\n11. Sort By Name\n12. Add Print Queue\n13. Process Prints\n14. Show Ranking Tree\n15. Load Sample Data\n0. Exit\n";
-        cout << "================================" << endl;
         cout << "Enter choice: ";
         cin >> choice;
 
@@ -384,8 +398,8 @@ int main() {
             case 5: showReport(); break;
             case 6: pointerSwap(); addHistory("Swapped", -1); break;
             case 7: showHistory(); break;
-            case 8: undo(); break;
-            case 9: redo(); break;
+            case 8: undo(); addHistory("Undo", -1); break;
+            case 9: redo(); addHistory("Redo", -1); break;
             case 10: displaySortedByScore(); break;
             case 11: displaySortedByName(); break;
             case 12: enqueuePrint(); break;
