@@ -59,7 +59,6 @@ void addStudent() {
     cin.ignore();
     getline(cin, s.name);
     cout << "Enter major: ";
-    cin.ignore();
     getline(cin, s.major);
     cout << "Enter score: ";
     cin >> s.score;
@@ -79,6 +78,7 @@ void showStudents() {
         if (students[i].valid)
             cout << "ID: " << students[i].id
                  << " | Name: " << students[i].name
+                 << " | Major: " << students[i].major
                  << " | Score: " << students[i].score << "\n";
     }
     if (studentCount == 0)
@@ -264,24 +264,36 @@ void selectionSortByScore(Student arr[], int n) {
 }
 
 //Display Sorted Views
-// Display students sorted by Name (A-Z)
+//Display students sorted by Name (A-Z)
 void displaySortedByName() {
-    vector<Student> v;
-    for (int i = 0; i < studentCount; ++i)
-        if (students[i].valid) v.push_back(students[i]);
-    sort(v.begin(), v.end(), [](const Student& a, const Student& b){ return a.name < b.name; });
-    cout << "\n--- Students Sorted by Name (A-Z) ---\n";
-    for (const auto& s : v) s.display();
+    Student tempArray[MAX];
+    int validCount = 0;
+    for (int i = 0; i < studentCount; ++i) {
+        if (students[i].valid) {
+            tempArray[validCount++] = students[i];
+        }
+    }
+    selectionSortByName(tempArray, validCount);
+    cout << "\n--- Students Sorted by Name (A-Z) (Using Selection Sort) ---\n";
+    for (int i = 0; i < validCount; ++i) {
+        tempArray[i].display();
+    }
 }
 
 // Display students sorted by Score (High -> Low)
 void displaySortedByScore() {
-    vector<Student> v;
-    for (int i = 0; i < studentCount; ++i)
-        if (students[i].valid) v.push_back(students[i]);
-    sort(v.begin(), v.end(), [](const Student& a, const Student& b){ return a.score > b.score; });
-    cout << "\n--- Students Sorted by Score (High -> Low) ---\n";
-    for (const auto& s : v) s.display();
+    Student tempArray[MAX];
+    int validCount = 0;
+    for (int i = 0; i < studentCount; ++i) {
+        if (students[i].valid) {
+            tempArray[validCount++] = students[i];
+        }
+    }
+    selectionSortByScore(tempArray, validCount);
+    cout << "\n--- Students Sorted by Score (High -> Low) (Using Selection Sort) ---\n";
+    for (int i = 0; i < validCount; ++i) {
+        tempArray[i].display();
+    }
 }
 
 // --------------------------- Print Queue Manager ---------------------------
@@ -391,6 +403,7 @@ int main() {
         cout << "================================" << endl;
         cout << "1. Add Student\n2. Delete Student\n3. Show Students\n4. Search Student\n5. Show Report\n6. Pointer Swap\n";
         cout << "7. Show History\n8. Undo\n9. Redo\n10. Sort By Score\n11. Sort By Name\n12. Add Print Queue\n13. Process Prints\n14. Show Ranking Tree\n15. Load Sample Data\n0. Exit\n";
+        cout << "--------------------------------\n";
         cout << "Enter choice: ";
         cin >> choice;
 

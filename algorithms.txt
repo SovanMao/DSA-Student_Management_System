@@ -82,16 +82,6 @@ begin
     end if
 end procedure
 
-function findStudent(var id: integer) : integer
-begin
-    for (var i : integer <-0, i < studentCount, i++) do
-        if (students[i].id == id) then
-            return i
-        end if
-    end for
-    return -1
-end function
-
 procedure searchStudent()
 begin
     if (studentCount == 0) then
@@ -112,6 +102,16 @@ begin
         write("Student not found!")
     end if
 end procedure
+
+function findStudent(var id: integer) : integer
+begin
+    for (var i : integer <-0, i < studentCount, i++) do
+        if (students[i].id == id) then
+            return i
+        end if
+    end for
+    return -1
+end function
 
 procedure deleteStudent()
 begin
@@ -214,6 +214,9 @@ begin
         temp <- temp.next
         count <- count + 1
     end while
+    if (count == 0) then
+        write("No history available")
+    end if
 end procedure
 
 // --------------------------- Undo / Redo System ---------------------------
@@ -291,31 +294,39 @@ end procedure
 
 procedure displaySortedByName()
 begin
-    var v: vector of Student
-    for (var i : integer <-0, i < studentCount, i++) do
-        if (students[i].valid) then
-            v.push_back(students[i])
+    var v: array of Student
+    var count: integer <- 0
+    
+    for (var i :integer <- 0; i < studentCount; i++) do
+        if students[i].valid then
+            v[count] <- students[i]
+            count <- count + 1
         end if
     end for
-    sort v by name ascending
+    selectionSortByName(v, count)
+    
     write("--- Students Sorted by Name (A-Z) ---")
-    for (each s in v) do
-        s.display()
+    for (var i :integer <- 0; i < count; i++) do
+        v[i].display()
     end for
 end procedure
 
 procedure displaySortedByScore()
 begin
-    var v: vector of Student
-    for (var i : integer <-0, i < studentCount, i++) do
-        if (students[i].valid) then
-            v.push_back(students[i])
+    var v: array of Student
+    var count: integer <- 0
+    
+    for (var i :integer <- 0; i < studentCount; i++) do
+        if students[i].valid then
+            v[count] <- students[i]
+            count <- count + 1
         end if
     end for
-    sort v by score descending
+    selectionSortByScore(v, count)
+    
     write("--- Students Sorted by Score (High -> Low) ---")
-    for (each s in v) do
-        s.display()
+    for (var i :integer <- 0; i < count; i++) do
+        v[i].display()
     end for
 end procedure
 
