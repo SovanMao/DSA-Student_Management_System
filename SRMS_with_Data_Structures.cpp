@@ -81,6 +81,8 @@ void showStudents() {
                  << " | Name: " << students[i].name
                  << " | Score: " << students[i].score << "\n";
     }
+    if (studentCount == 0)
+        cout << "No students available.\n";
 }
 
 void searchStudent() {
@@ -190,6 +192,8 @@ void showHistory() {
         temp = temp->next;
         count++;
     }
+    if (count == 0)
+        cout << "No history available.\n";  
 }
 
 // --------------------------- Undo / Redo System ---------------------------
