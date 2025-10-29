@@ -1,290 +1,403 @@
-/* Algorithms for SRMS functions (pseudocode)
-   Each function below describes inputs, side-effects and step-by-step pseudocode.
-   Style: function name() followed by indented pseudocode using write/read statements.
-*/
+// -------------------- DATA STRUCTURE DEFINITIONS --------------------
+Struct Student
+    var id: integer
+    var name: string
+    var score: double
+    var major: string
+    var valid: boolean
 
-function addStudent():
-    // Side-effects: appends a new Student to students[], increments studentCount and nextId
+    procedure display()
+    begin
+        write("ID: " + id + " | Name: " + name + " | Major: " + major + " | Score: " + score)
+    end procedure
+end struct
+
+Struct Node
+    var action: string
+    var id: integer
+    var *next: Node
+end struct
+
+Struct TreeNode
+    var data: Student
+    var *left: TreeNode
+    var *right: TreeNode
+end struct
+
+// -------------------- GLOBAL CONSTANTS AND VARIABLES --------------------
+constant MAX <- 100
+var students: array [MAX] of Student    // Main array storage
+var studentCount: integer <- 0          // Current number of records in the array
+var nextId: integer <- 1                // Next ID to assign
+var *history: Node <- null    // Linked List head for record history
+var undoStack: Stack of Student         // Stack for undo operations
+var redoStack: Stack of Student         // Stack for redo operations
+var printQueue: Queue of integer        // Queue for print requests (stores Student IDs)
+
+// --------------------------- Array Manager ---------------------------
+
+procedure addStudent()
+begin
     if (studentCount >= MAX) then
         write("Storage full!")
         return
     end if
     var s: Student
-    s.id <- nextId++
-    write("Enter Student Name:")
-    readline(s.name)        
-    write("Enter score:")
+    s->id <- nextId
+    nextId <- nextId + 1
+    
+    write("Enter name: ")
+    read(s.name)     
+    write("Enter major: ")
+    read(s.major)
+    write("Enter score: ")
     read(s.score)
-    write("Enter major:")
-    readline(s.major)
     s.valid <- true
-    students[studentCount++] <- s
-    write("Student added successfully!")
+    
+    var state_before_add: Student <- s
+    state_before_add.valid <- false
+    undoStack.push(state_before_add)
 
-function showStudents():
+    while (redoStack != null) do
+        redoStack.pop()
+    end while
+    
+    students[studentCount] <- s
+    studentCount <- studentCount + 1
+    write("Student added successfully!")
+end procedure
+
+procedure showStudents()
+begin
     write("--- Student List ---")
-    var anyPrinted: boolean
-    anyPrinted <- false
-    for (i:integer<-0, i<studentCount, i++) do
-        if students[i].valid then
-            write("ID: " + students[i].id + " | Name: " + students[i].name + " | Score: " + students[i].score)
+    var anyPrinted: boolean <- false
+    for ( var i : integer <-0, i < studentCount, i++) do
+        if (students[i].valid) then
+            students[i].display()
             anyPrinted <- true
         end if
     end for
-    if not anyPrinted then
+    if (!anyPrinted) then
         write("No students to show.")
     end if
+end procedure
 
+function findStudent(var id: integer) : integer
+begin
+    for (var i : integer <-0, i < studentCount, i++) do
+        if (students[i].id == id) then
+            return i
+        end if
+    end for
+    return -1
+end function
 
-function searchStudent():
+procedure searchStudent()
+begin
     if (studentCount == 0) then
         write("No students to search!")
         return
     end if
+    
+    var id: integer
     write("--- SEARCH STUDENT ---")
-    write("Enter student ID:")
+    write("Enter student ID: ")
     read(id)
-    idx <- findStudent(id)
-    for (i:integer<-0, i<studentCount, i++) do
-        if idx != -1 then
-            write("Student found at position " + (idx + 1))
-            write("ID: " + students[idx].id + " | Name: " + students[idx].name + " | Score: " + students[idx].score)
-        else
-            write("Student not found!")
-        end if
-    end for
+    
+    var idx: integer <- findStudent(id)
+    if (idx != -1 AND students[idx].valid) then
+        write("Student found at position " + (idx + 1) + ":")
+        students[idx].display()
+    else
+        write("Student not found!")
+    end if
+end procedure
 
-
-function findStudent(id: integer) -> integer:
-    for (i:integer<-0, i<studentCount, i++) do
-        if (students[i].valid && students[i].id == id) then
-            return i
-        end if
-    return -1
-    end for
-
-function deleteStudent():
-    write("Enter ID to delete:")
+procedure deleteStudent()
+begin
+    var id: integer
+    write("Enter ID to delete: ")
     read(id)
     idx <- findStudent(id)
     if (idx == -1) then
         write("Student not found!")
         return
     end if
+    
+    undoStack.push(students[idx])
+    
+    while (redoStack != null) do
+        redoStack.pop()
+    end while
+    
     students[idx].valid <- false
     write("Deleted successfully.")
-
+end procedure
 
 // --------------------------- Recursive Report ---------------------------
-function recursiveReport(i:integer, &pass:interger, &fail:integer, &out:integer):
-    if i >= studentCount then
+
+procedure recursiveReport(var i: integer, ref pass: integer, ref fail: integer, ref out: integer)
+begin
+    if (i >= studentCount) then
         return
     end if
-    if students[i].valid then
-        if students[i].score >= 85 then
+    if (students[i].valid) then
+        if (students[i].score >= 85) then
             out <- out + 1
-        if students[i].score >= 50 then
+        end if
+        if (students[i].score >= 50) then
             pass <- pass + 1
         else
             fail <- fail + 1
+        end if
     end if
     recursiveReport(i + 1, pass, fail, out)
+end procedure
 
-function showReport():
-    var pass:interger <- 0
-    var fail:interger <- 0
-    var out:interger <- 0
+procedure showReport()
+begin
+    var pass: integer <- 0
+    var fail: integer <- 0
+    var out: integer <- 0
     recursiveReport(0, pass, fail, out)
     write("--- Student Report ---")
     write("Passed: " + pass)
     write("Failed: " + fail)
     write("Outstanding: " + out)
-
+end procedure
 
 // --------------------------- Pointer Operations ---------------------------
-function swapByPointer(a: pointer to Student, b: pointer to Student):
+
+procedure swapByPointer(ref a: Student, ref b: Student)
+begin
     var temp: Student
-    temp <- *a
-    *a <- *b
-    *b <- temp
+    temp <- a
+    a <- b
+    b <- temp
+end procedure
 
-// --------------------------- Linked List History ---------------------------
-
-
-function pointerSwap():
-    write("Enter first student ID to swap:")
+procedure pointerSwap()
+begin
+    var id1, id2: integer
+    write("Enter first student ID to swap: ")
     read(id1)
-    write("Enter second student ID to swap:")
+    write("Enter second student ID to swap: ")
     read(id2)
     i1 <- findStudent(id1)
     i2 <- findStudent(id2)
     if (i1 == -1 OR i2 == -1) then
         write("Invalid IDs!")
         return
-    swapByPointer(&students[i1], &students[i2])
+    end if
+    swapByPointer(students[i1], students[i2])
     write("Records swapped successfully!")
+end procedure
 
-function addHistory(action: string, id: int):
-    var newNode <- allocate Node
-    newNode.action <- action
-    newNode.id <- id
-    newNode.next <- history
+// --------------------------- Linked List History ---------------------------
+
+procedure addHistory(var action: string, var id: integer)
+begin
+    var &newNode: Node
+    newNode->action <- action
+    newNode->id <- id
+    newNode->next <- history
     history <- newNode
+end procedure
 
-function showHistory():
+procedure showHistory()
+begin
     write("--- History ---")
-    temp <- history
-    count <- 0
-    while temp != null AND count < 10 do
-        write(temp.action + " (ID " + temp.id + ")")
+    var *temp: Node <- history
+    var count: integer <- 0
+    while (temp != null AND count < 10) do
+        write(temp->action + " (ID " + temp->id + ")")
         temp <- temp.next
         count <- count + 1
-    if history == null then
-        write("No history.")
+    end while
+end procedure
 
-function undo():
-    if undoStack.empty() then
+// --------------------------- Undo / Redo System ---------------------------
+
+procedure undo()
+begin
+    if (undoStack <- null) then
         write("Nothing to undo!")
         return
-    last <- undoStack.top()
+    end if
+    var state_to_restore: Student <- undoStack.top()
     undoStack.pop()
-    idx <- findStudent(last.id)
-    if idx != -1 then
-        students[idx] <- last
-    else
-        // Optionally: append as new record
-        skip
-    redoStack.push(last)
-    write("Undo performed.")
 
-function redo():
-    if redoStack.empty() then
+    idx <- findStudent(state_to_restore.id)
+    if (idx != -1) then
+        redoStack.push(students[idx]) 
+        
+        students[idx] <- state_to_restore
+        write("Undo performed.")
+    else
+        write("Undo performed, but original record location is lost.")
+    end if
+end procedure
+
+procedure redo()
+begin
+    if (redoStack <- null) then
         write("Nothing to redo!")
         return
-    rec <- redoStack.top()
+    end if
+    var state_to_restore: Student <- redoStack.top()
     redoStack.pop()
-    undoStack.push(rec)
-    idx <- findStudent(rec.id)
-    if idx != -1 then
-        students[idx] <- rec
+
+    idx <- findStudent(state_to_restore.id)
+    if (idx != -1) then
+        undoStack.push(students[idx]) 
+        students[idx] <- state_to_restore
+        write("Redo performed.")
     else
-        // Optionally: append as new record
-        skip
-    write("Redo performed.")
+        write("Redo performed, but record location is lost.")
+    end if
+end procedure
 
-function selectionSortByName(arr: array of Student, n: int):
-    for i from 0 to n - 2 do
-        minIndex <- i
-        for j from i + 1 to n - 1 do
-            if arr[j].name < arr[minIndex].name then
+// --------------------------- Sorting Algorithms ---------------------------
+
+procedure selectionSortByName(var arr: array of Student, var n: integer)
+begin
+    for (var i :integer <- 0; i < n - 1; i++) do
+        var minIndex: integer <- i
+        for (var j : integer <- i + 1; j < n; j++) do
+            if (arr[j].name < arr[minIndex].name) then
                 minIndex <- j
-        if minIndex != i then
+            end if
+        end for
+        if (minIndex != i) then
             swap(arr[i], arr[minIndex])
+        end if
+    end for
+end procedure
 
-function selectionSortByScore(arr: array of Student, n: int):
-    for i from 0 to n - 2 do
-        maxIndex <- i
-        for j from i + 1 to n - 1 do
-            if arr[j].score > arr[maxIndex].score then
+procedure selectionSortByScore(var arr: array of Student, var n: integer)
+begin
+    for (var i :integer <- 0; i < n - 1; i++) do
+        var maxIndex: integer <- i
+        for (var j : integer <- i + 1; j < n; j++) do
+            if (arr[j].score > arr[maxIndex].score) then
                 maxIndex <- j
-        if maxIndex != i then
+            end if
+        end for
+        if (maxIndex != i) then
             swap(arr[i], arr[maxIndex])
+        end if
+    end for
+end procedure
 
-function displaySortedByName():
-    var v <- empty list of Student
-    for i from 0 to studentCount - 1 do
-        if students[i].valid then
-            append v, students[i]
+procedure displaySortedByName()
+begin
+    var v: vector of Student
+    for (var i : integer <-0, i < studentCount, i++) do
+        if (students[i].valid) then
+            v.push_back(students[i])
+        end if
+    end for
     sort v by name ascending
     write("--- Students Sorted by Name (A-Z) ---")
-    for each s in v do
-        write("ID: " + s.id + " | Name: " + s.name + " | Score: " + s.score)
+    for (each s in v) do
+        s.display()
+    end for
+end procedure
 
-function displaySortedByScore():
-    var v <- empty list of Student
-    for i from 0 to studentCount - 1 do
-        if students[i].valid then
-            append v, students[i]
+procedure displaySortedByScore()
+begin
+    var v: vector of Student
+    for (var i : integer <-0, i < studentCount, i++) do
+        if (students[i].valid) then
+            v.push_back(students[i])
+        end if
+    end for
     sort v by score descending
     write("--- Students Sorted by Score (High -> Low) ---")
-    for each s in v do
-        write("ID: " + s.id + " | Name: " + s.name + " | Score: " + s.score)
+    for (each s in v) do
+        s.display()
+    end for
+end procedure
 
-function enqueuePrint():
-    write("Enter student ID to print:")
+// --------------------------- Print Queue Manager ---------------------------
+
+procedure enqueuePrint()
+begin
+    var id: integer
+    write("Enter student ID to print: ")
     read(id)
     printQueue.push(id)
+    addHistory("Queued Print", id)
     write("Added to print queue.")
+end procedure
 
-function processPrints():
+procedure processPrints()
+begin
     write("--- Print Queue ---")
-    while not printQueue.empty() do
+    var id: integer
+    while (printQueue != null) do
         id <- printQueue.front()
         printQueue.pop()
         idx <- findStudent(id)
-        if idx != -1 AND students[idx].valid then
+        if (idx != -1 AND students[idx].valid) then
+            addHistory("Printed", id)
             write("Printing Report - " + students[idx].name + ": " + students[idx].score)
         else
             write("Student not found.")
+        end if
+    end while
+end procedure
 
-function insert(root: TreeNode pointer, s: Student) -> TreeNode pointer:
-    if root == null then
-        node <- allocate TreeNode
-        node.data <- s
-        node.left <- null
-        node.right <- null
+// --------------------------- Score Ranking Tree ---------------------------
+
+function insert(var *root: TreeNode, var s: Student) : pointer to TreeNode
+begin
+    if (root == null) then
+        var *node: TreeNode
+        node->data <- s
+        node->left <- null
+        node->right <- null
         return node
-    if s.score < root.data.score then
-        root.left <- insert(root.left, s)
+    end if
+    if (s->score < root->data->score) then
+        root->left <- insert(root->left, s)
     else
-        root.right <- insert(root.right, s)
+        root->right <- insert(root->right, s)
+    end if
     return root
+end function
 
-function inorder(root: TreeNode pointer):
-    if root == null then
+procedure inorder(var *root: TreeNode)
+begin
+    if (root == null) then
         return
-    inorder(root.right)   // visit high scores first
-    write(root.data.name + " (" + root.data.score + ")")
-    inorder(root.left)
+    end if
+    inorder(root.right)
+    write(root->data->name + " (" + root->data->score + ")")
+    inorder(root->left)
+end procedure
 
-function showRanking():
-    root <- null
-    for i from 0 to studentCount - 1 do
-        if students[i].valid then
+procedure showRanking()
+begin
+    var *root: TreeNode <- null
+    for (var i:integer <- 0; i < studentCount; i++) do
+        if (students[i].valid) then
             root <- insert(root, students[i])
+        end if
+    end for
     write("--- Score Ranking (High to Low) ---")
     inorder(root)
+end procedure
 
-function loadSampleData():
-    write("Loading sample data...")
-    if studentCount > 0 then
-        write("Sample data already loaded or students exist!")
-        return
-    samples <- [
-        ("Alice","Computer Science",85.5),
-        ("Bob","Mathematics",72.0),
-        ("Carol","Engineering",95.0),
-        ("David","Biology",45.5),
-        ("Eva","Physics",88.0)
-        // add more as needed
-    ]
-    for each item in samples while studentCount < MAX do
-        var s: Student
-        s.id <- nextId
-        nextId <- nextId + 1
-        s.name <- item.name
-        s.major <- item.major
-        s.score <- item.score
-        s.valid <- true
-        students[studentCount] <- s
-        studentCount <- studentCount + 1
-    write("Sample data loaded: " + studentCount + " students")
+// --------------------------- Main Menu ---------------------------
 
-function main():
+function main() : integer
+begin
+    var choice: integer
     repeat
-        write(menu text...)
-        write("Enter choice:")
+        write("Enter choice: ")
         read(choice)
+
         switch choice:
             case 1: addStudent(); addHistory("Added", nextId - 1); break
             case 2: deleteStudent(); addHistory("Deleted", nextId - 1); break
@@ -293,8 +406,8 @@ function main():
             case 5: showReport(); break
             case 6: pointerSwap(); addHistory("Swapped", -1); break
             case 7: showHistory(); break
-            case 8: undo(); break
-            case 9: redo(); break
+            case 8: undo(); addHistory("Undo", -1); break
+            case 9: redo(); addHistory("Redo", -1); break
             case 10: displaySortedByScore(); break
             case 11: displaySortedByName(); break
             case 12: enqueuePrint(); break
@@ -303,4 +416,8 @@ function main():
             case 15: loadSampleData(); break
             case 0: write("Exiting..."); break
             default: write("Invalid choice!")
-    until choice == 0
+        end switch
+    if (choice == 0) then
+        return 0
+    end if
+end function
