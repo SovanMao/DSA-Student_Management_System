@@ -31,8 +31,8 @@ using namespace std;
 struct Student {
     int id;
     string name;
-    double score;
     string major;
+    double score;
     bool valid;
 
     // Display student
@@ -54,34 +54,34 @@ void addStudent() {
     }
     Student s;
     s.id = nextId++;
-    cout << "Enter name: ";
+    cout << "Enter Student Name: ";
     cin.ignore();
     getline(cin, s.name);
-    cout << "Enter score: ";
-    cin >> s.score;
     cout << "Enter major: ";
     cin.ignore();
     getline(cin, s.major);
+    cout << "Enter score: ";
+    cin >> s.score;
     s.valid = true;
     students[studentCount++] = s;
-    cout << "Student added successfully!\n";
+    cout << "\nStudent added successfully!\n";
 }
 
 void showStudents() {
     cout << "\n--- Student List ---\n";
+    bool anyPrinted = false;
     for (int i = 0; i < studentCount; i++) {
-        if (students[i].valid)
+        if (students[i].valid) {
             cout << "ID: " << students[i].id
                  << " | Name: " << students[i].name
                  << " | Score: " << students[i].score << "\n";
+            anyPrinted = true;
+        }
     }
-}
-
-int findStudent(int id) {
-    for (int i = 0; i < studentCount; i++)
-        if (students[i].valid && students[i].id == id)
-            return i;
-    return -1;
+    if (!anyPrinted) {
+        cout << "No valid students found.\n";
+    }
+    cout << "---------------------\n" << endl;
 }
 
 void searchStudent() {
@@ -103,6 +103,13 @@ void searchStudent() {
         }
     }
     cout << "Student not found!" << endl;
+}
+
+int findStudent(int id) {
+    for (int i = 0; i < studentCount; i++)
+        if (students[i].valid && students[i].id == id)
+            return i;
+    return -1;
 }
 
 void deleteStudent() {
@@ -182,6 +189,8 @@ void showHistory() {
         temp = temp->next;
         count++;
     }
+    if (!history)
+        cout << "No history available.\n";
 }
 
 // --------------------------- Undo / Redo System ---------------------------
@@ -363,6 +372,7 @@ int main() {
         cout << "================================" << endl;
         cout << "1. Add Student\n2. Delete Student\n3. Show Students\n4. Search Student\n5. Show Report\n6. Pointer Swap\n";
         cout << "7. Show History\n8. Undo\n9. Redo\n10. Sort By Score\n11. Sort By Name\n12. Add Print Queue\n13. Process Prints\n14. Show Ranking Tree\n15. Load Sample Data\n0. Exit\n";
+        cout << "================================" << endl;
         cout << "Enter choice: ";
         cin >> choice;
 
